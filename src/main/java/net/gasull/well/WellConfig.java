@@ -1,6 +1,7 @@
 package net.gasull.well;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Color;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -40,6 +42,14 @@ public class WellConfig {
 		this.plugin = plugin;
 		this.filePath = filePath;
 		this.conf = new YamlConfiguration();
+
+		try {
+			conf.load(new File(plugin.getDataFolder(), filePath));
+		} catch (FileNotFoundException e) {
+			// Do nothing, we'll create a new conf
+		} catch (IOException | InvalidConfigurationException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

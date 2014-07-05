@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.gasull.well</groupId>
 	<artifactId>well-core</artifactId>
-	<version>0.3.0</version>
+	<version>0.4.0</version>
 
 	<properties>
 		<minecraft.version>1.7.9</minecraft.version>

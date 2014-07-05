@@ -1,7 +1,13 @@
 package net.gasull.well.db;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Collection;
 
+import net.gasull.well.WellCore;
+
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.avaje.ebean.EbeanServer;
@@ -12,17 +18,37 @@ import com.avaje.ebean.Transaction;
  */
 public abstract class WellDao {
 
-	/** The actual db object. */
-	private final EbeanServer db;
+	protected void checkVersion(JavaPlugin plugin) {
+		YamlConfiguration pluginConfig = new YamlConfiguration();
+		try {
+			pluginConfig.load(new InputStreamReader(plugin.getResource("plugin.yml")));
+		} catch (IOException | InvalidConfigurationException e) {
+			throw new RuntimeException(e);
+		}
+
+		String pluginName = pluginConfig.getString("name");
+		String pluginVersion = pluginConfig.getString("version");
+		String lastVersion = WellCore.db().getLastVersion(pluginName);
+
+		handleVersionChanges(lastVersion, pluginVersion);
+
+		if (lastVersion == null || !lastVersion.equals(pluginVersion)) {
+			WellCore.db().updateVersion(pluginName, pluginVersion);
+		}
+	}
 
 	/**
-	 * Instantiates a new well dao.
+	 * To be implemented to handle version changes. When subclass calls
+	 * {@link #checkVersion(JavaPlugin)}, this method will receive associated
+	 * arguments.
 	 * 
-	 * @param plugin
-	 *            the plugin
+	 * @param oldVersion
+	 *            the old version of the plugin
+	 * @param newVersion
+	 *            the new version of the plugin
 	 */
-	public WellDao(JavaPlugin plugin) {
-		this.db = plugin.getDatabase();
+	protected void handleVersionChanges(String oldVersion, String newVersion) {
+		// Do nothing by default. Otherwise, should be implemented.
 	}
 
 	/**
@@ -32,7 +58,7 @@ public abstract class WellDao {
 	 *            the model
 	 */
 	public void save(Object model) {
-		this.db.save(model);
+		getDb().save(model);
 	}
 
 	/**
@@ -42,7 +68,7 @@ public abstract class WellDao {
 	 *            the models
 	 */
 	public void save(Collection<?> models) {
-		this.db.save(models);
+		getDb().save(models);
 	}
 
 	/**
@@ -53,7 +79,7 @@ public abstract class WellDao {
 	 */
 	public void delete(Object model) {
 		refresh(model);
-		this.db.delete(model);
+		getDb().delete(model);
 	}
 
 	/**
@@ -63,7 +89,7 @@ public abstract class WellDao {
 	 *            the model
 	 */
 	public void refresh(Object model) {
-		db.refresh(model);
+		getDb().refresh(model);
 	}
 
 	/**
@@ -72,7 +98,13 @@ public abstract class WellDao {
 	 * @return the transaction
 	 */
 	public Transaction transaction() {
-		return db.beginTransaction();
-
+		return getDb().beginTransaction();
 	}
+
+	/**
+	 * Let DAOs access to the DB.
+	 * 
+	 * @return the ebean server
+	 */
+	abstract protected EbeanServer getDb();
 }

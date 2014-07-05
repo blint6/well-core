@@ -2,6 +2,8 @@ package net.gasull.well;
 
 import java.util.logging.Logger;
 
+import net.gasull.well.db.WellCommonDao;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -14,6 +16,9 @@ public class WellCore extends JavaPlugin {
 
 	/** The well core's config. */
 	private static WellConfig config;
+
+	/** The db. */
+	private WellCommonDao db;
 
 	/** The permission manager. */
 	private static WellPermissionManager permission;
@@ -50,6 +55,19 @@ public class WellCore extends JavaPlugin {
 	 */
 	public static Logger logger() {
 		return getInstance().getLogger();
+	}
+
+	/**
+	 * The common DAO fro well plugins. Dynamically inits, because this can't
+	 * happen in {@link #onLoad()} but must happen before any other DAO inits.
+	 * 
+	 * @return the common DAO
+	 */
+	public static WellCommonDao db() {
+		if (getInstance().db == null) {
+			getInstance().db = new WellCommonDao(getInstance());
+		}
+		return getInstance().db;
 	}
 
 	/**
