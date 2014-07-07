@@ -10,10 +10,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class WellPermissionManager {
 
 	/** The plugin. */
-	private JavaPlugin plugin;
+	private final JavaPlugin plugin;
 
-	/** The message template for not allowed permissions. */
-	private final String notAllowedMsg;
+	/** The config. */
+	private final WellConfig config;
 
 	/**
 	 * Instantiates a new well permission manager.
@@ -25,13 +25,7 @@ public class WellPermissionManager {
 	 */
 	public WellPermissionManager(JavaPlugin plugin, WellConfig config) {
 		this.plugin = plugin;
-
-		// Preparing "not allowed" messages
-		String notAllowedKey = "lang.permission.notAllowed";
-		String defaultNotAllowed = "You're not allowed to %thing%";
-		String notAllowed = config.getString(notAllowedKey, defaultNotAllowed);
-
-		this.notAllowedMsg = notAllowed;
+		this.config = config;
 	}
 
 	/**
@@ -48,7 +42,7 @@ public class WellPermissionManager {
 	 */
 	public void can(Player player, String thing, String key) throws WellPermissionException {
 		if (!player.hasPermission(key)) {
-			player.sendMessage(ChatColor.DARK_RED + notAllowedMsg.replace("%thing%", thing));
+			player.sendMessage(ChatColor.DARK_RED + config.getString("lang.permission.notAllowed").replace("%thing%", thing));
 			throw new WellPermissionException(key);
 		}
 	}

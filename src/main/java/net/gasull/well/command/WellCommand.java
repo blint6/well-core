@@ -16,20 +16,6 @@ import org.bukkit.entity.Player;
  */
 public abstract class WellCommand<P extends CommandSender> {
 
-	/** The must be player error. */
-	private final String mustBePlayerError;
-
-	/** The permission error message. */
-	private final String permissionMessage;
-
-	/**
-	 * Instantiates a new command.
-	 */
-	public WellCommand() {
-		this.mustBePlayerError = ChatColor.DARK_RED + WellCore.conf().getString("lang.command.error.mustBePlayer", "You must be a player to run this command");
-		this.permissionMessage = ChatColor.DARK_RED + WellCore.conf().getString("lang.command.error.permission", "to run this command");
-	}
-
 	/**
 	 * Executes the command, with checks.
 	 * 
@@ -46,7 +32,7 @@ public abstract class WellCommand<P extends CommandSender> {
 		if (castedSender != null && checkArguments(sender, args)) {
 
 			if (getPermission() != null && sender instanceof Player) {
-				WellCore.permission().can((Player) sender, permissionMessage, getPermission());
+				WellCore.permission().can((Player) sender, WellCore.lang().error("command.error.permission"), getPermission());
 			}
 
 			try {
@@ -73,7 +59,7 @@ public abstract class WellCommand<P extends CommandSender> {
 		try {
 			return (P) sender;
 		} catch (ClassCastException e) {
-			sender.sendMessage(mustBePlayerError);
+			sender.sendMessage(WellCore.lang().error("command.error.mustBePlayer"));
 			return null;
 		}
 	}

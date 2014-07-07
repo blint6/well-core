@@ -1,0 +1,5 @@
+command:
+  error:
+    mustBePlayer: "You must be a player to run this command"
+    permission: "to run this command"
+    usage: "Usage: /%command% %subcommand% %args%"

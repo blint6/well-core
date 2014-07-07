@@ -17,6 +17,9 @@ public class WellCore extends JavaPlugin {
 	/** The well core's config. */
 	private static WellConfig config;
 
+	/** The core localization. */
+	private static WellLanguageConfig lang;
+
 	/** The db. */
 	private WellCommonDao db;
 
@@ -26,8 +29,8 @@ public class WellCore extends JavaPlugin {
 	@Override
 	public void onLoad() {
 		instance = this;
-		config = new WellConfig(this, "well-core.yml");
-		permission = new WellPermissionManager(this, config);
+		config = new WellConfig(this, "well-core.yml", true);
+		lang = new WellLanguageConfig(this, config.getString("language"));
 	}
 
 	/**
@@ -37,6 +40,15 @@ public class WellCore extends JavaPlugin {
 	 */
 	public static WellConfig conf() {
 		return config;
+	}
+
+	/**
+	 * Lang.
+	 * 
+	 * @return the well language config
+	 */
+	public static WellLanguageConfig lang() {
+		return lang;
 	}
 
 	/**

@@ -9,7 +9,6 @@ import net.gasull.well.WellCore;
 import net.gasull.well.WellPermissionManager.WellPermissionException;
 
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -26,9 +25,6 @@ public class WellCommandHandler implements CommandExecutor {
 	/** The registered subcommands. */
 	Map<String, WellCommand<?>> subCommands = new HashMap<>();
 
-	/** The usage error message. */
-	private final String usageError;
-
 	/**
 	 * Instantiates a new well command handler.
 	 * 
@@ -37,7 +33,6 @@ public class WellCommandHandler implements CommandExecutor {
 	 */
 	private WellCommandHandler(String command) {
 		this.commandName = command;
-		this.usageError = ChatColor.DARK_RED + WellCore.conf().getString("lang.command.error.usage", "Usage: /%command% %subcommand% %args%");
 	}
 
 	/**
@@ -89,8 +84,8 @@ public class WellCommandHandler implements CommandExecutor {
 				String argsString = StringUtils.join(wellCommand.getRequiredArgs(), " ");
 				String optionalsString = wellCommand.getOptionalArgs() == null ? "" : String.format(" [%s]"
 						+ StringUtils.join(wellCommand.getOptionalArgs(), " "));
-				sender.sendMessage(usageError.replace("%command%", commandName).replace("%subcommand%", wellCommand.getName())
-						.replace("%args%", argsString + optionalsString));
+				sender.sendMessage(WellCore.lang().error("command.error.usage").replace("%command%", commandName)
+						.replace("%subcommand%", wellCommand.getName()).replace("%args%", argsString + optionalsString));
 			}
 
 			return true;
