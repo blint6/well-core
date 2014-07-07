@@ -2,6 +2,7 @@ package net.gasull.well.db;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Collection;
 
 import net.gasull.well.WellCore;
@@ -20,8 +21,9 @@ public abstract class WellDao {
 
 	protected void checkVersion(JavaPlugin plugin) {
 		YamlConfiguration pluginConfig = new YamlConfiguration();
-		try {
-			pluginConfig.load(new InputStreamReader(plugin.getResource("plugin.yml")));
+
+		try (Reader reader = new InputStreamReader(plugin.getResource("plugin.yml"))) {
+			pluginConfig.load(reader);
 		} catch (IOException | InvalidConfigurationException e) {
 			throw new RuntimeException(e);
 		}
