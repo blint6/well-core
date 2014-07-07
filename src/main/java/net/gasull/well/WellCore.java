@@ -54,7 +54,7 @@ public class WellCore extends JavaPlugin {
 	 * @return the logger
 	 */
 	public static Logger logger() {
-		return getInstance().getLogger();
+		return instance().getLogger();
 	}
 
 	/**
@@ -64,10 +64,10 @@ public class WellCore extends JavaPlugin {
 	 * @return the common DAO
 	 */
 	public static WellCommonDao db() {
-		if (getInstance().db == null) {
-			getInstance().db = new WellCommonDao(getInstance());
+		if (instance().db == null) {
+			instance().db = new WellCommonDao(instance());
 		}
-		return getInstance().db;
+		return instance().db;
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class WellCore extends JavaPlugin {
 	 * 
 	 * @return single instance of WellCore
 	 */
-	public static WellCore getInstance() {
+	public static WellCore instance() {
 		return instance;
 	}
 }
