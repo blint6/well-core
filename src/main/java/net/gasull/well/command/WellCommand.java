@@ -1,7 +1,7 @@
 package net.gasull.well.command;
 
 import net.gasull.well.WellCore;
-import net.gasull.well.WellPermissionManager.WellPermissionException;
+import net.gasull.well.conf.WellPermissionManager.WellPermissionException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

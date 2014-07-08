@@ -2,6 +2,9 @@ package net.gasull.well;
 
 import java.util.logging.Logger;
 
+import net.gasull.well.conf.WellConfig;
+import net.gasull.well.conf.WellLanguageConfig;
+import net.gasull.well.conf.WellPermissionManager;
 import net.gasull.well.db.WellCommonDao;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,6 +34,7 @@ public class WellCore extends JavaPlugin {
 		instance = this;
 		config = new WellConfig(this, "well-core.yml", true);
 		lang = new WellLanguageConfig(this, config.getString("language"));
+		permission = new WellPermissionManager(instance, lang);
 	}
 
 	/**

@@ -1,6 +1,5 @@
-package net.gasull.well;
+package net.gasull.well.conf;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,19 +12,19 @@ public class WellPermissionManager {
 	private final JavaPlugin plugin;
 
 	/** The config. */
-	private final WellConfig config;
+	private final WellLanguageConfig lang;
 
 	/**
 	 * Instantiates a new well permission manager.
 	 * 
 	 * @param plugin
 	 *            the plugin
-	 * @param config
-	 *            the config
+	 * @param lang
+	 *            the language config
 	 */
-	public WellPermissionManager(JavaPlugin plugin, WellConfig config) {
+	public WellPermissionManager(JavaPlugin plugin, WellLanguageConfig lang) {
 		this.plugin = plugin;
-		this.config = config;
+		this.lang = lang;
 	}
 
 	/**
@@ -42,7 +41,7 @@ public class WellPermissionManager {
 	 */
 	public void can(Player player, String thing, String key) throws WellPermissionException {
 		if (!player.hasPermission(key)) {
-			player.sendMessage(ChatColor.DARK_RED + config.getString("lang.permission.notAllowed").replace("%thing%", thing));
+			player.sendMessage(lang.error("permission.notAllowed").replace("%thing%", thing));
 			throw new WellPermissionException(key);
 		}
 	}

@@ -1,4 +1,4 @@
-package net.gasull.well;
+package net.gasull.well.conf;
 
 import java.util.List;
 

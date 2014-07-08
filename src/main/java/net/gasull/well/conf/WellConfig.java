@@ -1,14 +1,11 @@
-package net.gasull.well;
+package net.gasull.well.conf;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +32,10 @@ public class WellConfig {
 	/** The conf. */
 	private FileConfiguration conf;
 
-	/** The file's relative path. */
-	private final String filePath;
+	/** The file to which the conf refer to. */
+	private final File file;
 
-	/** The Constant charset. */
+	/** The Constant CHARSET. */
 	private static final Charset CHARSET = Charset.forName("UTF-8");
 
 	/**
@@ -53,13 +50,27 @@ public class WellConfig {
 	 */
 	public WellConfig(JavaPlugin plugin, String filePath, boolean checkDefault) {
 		this.plugin = plugin;
-		this.filePath = filePath;
+		this.file = new File(plugin.getDataFolder(), filePath);
 
 		if (checkDefault) {
-			checkDefaultConf();
+			checkDefaultConf(filePath);
 		} else {
-			newEmptyConf();
+			loadConf();
 		}
+	}
+
+	/**
+	 * Instantiates a new well config.
+	 * 
+	 * @param plugin
+	 *            the plugin
+	 * @param conf
+	 *            the conf
+	 */
+	public WellConfig(JavaPlugin plugin, File conf) {
+		this.plugin = plugin;
+		this.file = conf;
+		loadConf();
 	}
 
 	/**
@@ -88,7 +99,7 @@ public class WellConfig {
 	 */
 	public void save() {
 		try {
-			conf.save(new File(plugin.getDataFolder(), filePath));
+			conf.save(file);
 		} catch (IOException e) {
 			plugin.getLogger().log(Level.SEVERE, "Couldn't save config file well-auction.yml", e);
 		}
@@ -261,40 +272,28 @@ public class WellConfig {
 
 	/**
 	 * Check if the conf is valid according to the plugin's reference resource.
+	 * 
+	 * @param filePath
+	 *            the file path
 	 */
-	private void checkDefaultConf() {
-		File usersFile = new File(plugin.getDataFolder(), filePath);
-
+	private void checkDefaultConf(String filePath) {
 		// If user already has this file, check that required fields are set
-		if (usersFile.isFile()) {
+		if (file.isFile()) {
 
 			File tmpConf = null;
 
-			try (Reader reader = new InputStreamReader(plugin.getResource(filePath), CHARSET)) {
+			try {
+				FileConfiguration defConf = WellResourceUtils.getConf(plugin, filePath).getConfig();
 
 				// Load user's conf
 				this.conf = new YamlConfiguration();
 				try {
-					this.conf.load(usersFile);
+					this.conf.load(file);
 				} catch (IOException e) {
 					plugin.getLogger().log(Level.SEVERE, "{} config is not a valid YAML file, please check before reloading plugin", new Object[] { filePath });
 					throw e;
 				}
 
-				// Copy the resource to a temporary path for the check
-				tmpConf = File.createTempFile(usersFile.getName(), null, plugin.getDataFolder());
-				try (Writer writer = new OutputStreamWriter(new FileOutputStream(tmpConf), CHARSET)) {
-					char[] buf = new char[12];
-
-					int nRead = reader.read(buf);
-					while (nRead > 0) {
-						writer.write(buf, 0, nRead);
-						nRead = reader.read(buf);
-					}
-				}
-
-				YamlConfiguration defConf = new YamlConfiguration();
-				defConf.load(tmpConf);
 				boolean confChanged = false;
 
 				// Fill missing values from reference config
@@ -306,7 +305,7 @@ public class WellConfig {
 				}
 
 				if (confChanged) {
-					this.conf.save(usersFile);
+					save();
 				}
 			} catch (IOException | InvalidConfigurationException e) {
 				throw new RuntimeException(e);
@@ -326,17 +325,17 @@ public class WellConfig {
 				throw new RuntimeException(e);
 			}
 			plugin.saveResource(filePath, false);
-			newEmptyConf();
+			loadConf();
 		}
 	}
 
 	/**
-	 * New empty conf from current data.
+	 * Simply load conf, if exists.
 	 */
-	private void newEmptyConf() {
+	private void loadConf() {
 		this.conf = new YamlConfiguration();
 		try {
-			conf.load(new File(plugin.getDataFolder(), filePath));
+			conf.load(new InputStreamReader(new FileInputStream(file), CHARSET));
 		} catch (FileNotFoundException e) {
 			// Do nothing, we'll create a new conf
 		} catch (IOException | InvalidConfigurationException e) {

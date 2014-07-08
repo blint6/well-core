@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import net.gasull.well.WellCore;
-import net.gasull.well.WellPermissionManager.WellPermissionException;
+import net.gasull.well.conf.WellPermissionManager.WellPermissionException;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
