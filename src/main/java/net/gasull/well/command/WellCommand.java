@@ -32,7 +32,7 @@ public abstract class WellCommand<P extends CommandSender> {
 		if (castedSender != null && checkArguments(sender, args)) {
 
 			if (getPermission() != null && sender instanceof Player) {
-				WellCore.permission().can((Player) sender, WellCore.lang().error("command.error.permission"), getPermission());
+				WellCore.permission().can((Player) sender, WellCore.lang().get("command.error.permission"), getPermission());
 			}
 
 			try {

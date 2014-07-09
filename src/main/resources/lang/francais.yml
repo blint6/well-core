@@ -1,0 +1,7 @@
+command:
+  error:
+    mustBePlayer: "Tu dois être un joueur pour exécuter cette commande"
+    permission: "d'exécuter cette commande"
+    usage: "Utilisation: /%command% %subcommand% %args%"
+permission:
+  notAllowed: "Tu n'as pas le droit %thing%"

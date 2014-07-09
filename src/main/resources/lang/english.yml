@@ -3,3 +3,5 @@ command:
     mustBePlayer: "You must be a player to run this command"
     permission: "to run this command"
     usage: "Usage: /%command% %subcommand% %args%"
+permission:
+  notAllowed: "You're not allowed to %thing%"

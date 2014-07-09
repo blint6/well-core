@@ -34,15 +34,15 @@ public class WellPermissionManager {
 	 *            the player
 	 * @param thing
 	 *            an expression describing the thing to do
-	 * @param key
+	 * @param permission
 	 *            the permission key
 	 * @throws WellPermissionException
 	 *             the well permission exception
 	 */
-	public void can(Player player, String thing, String key) throws WellPermissionException {
-		if (!player.hasPermission(key)) {
+	public void can(Player player, String thing, String permission) throws WellPermissionException {
+		if (!player.hasPermission(permission)) {
 			player.sendMessage(lang.error("permission.notAllowed").replace("%thing%", thing));
-			throw new WellPermissionException(key);
+			throw new WellPermissionException(permission);
 		}
 	}
 
