@@ -1,10 +1,12 @@
 package net.gasull.well.conf;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,17 +32,17 @@ public class WellResourceUtils {
 		File dataFolderPath = new File(plugin.getDataFolder(), resource);
 		File tmpResource = null;
 
-		try (BufferedInputStream reader = new BufferedInputStream(plugin.getResource(resource))) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(plugin.getResource(resource), StandardCharsets.UTF_8))) {
 
 			// Copy the resource to a temporary path for the check
 			tmpResource = File.createTempFile(dataFolderPath.getName(), null, plugin.getDataFolder());
-			try (BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(tmpResource))) {
-				byte[] buf = new byte[2048];
+			try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(tmpResource), WellConfig.CHARSET)) {
 
-				int nRead = reader.read(buf);
-				while (nRead > 0) {
-					writer.write(buf, 0, nRead);
-					nRead = reader.read(buf);
+				String line = reader.readLine();
+				while (line != null) {
+					writer.write(line);
+					writer.write('\n');
+					line = reader.readLine();
 				}
 			}
 

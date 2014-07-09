@@ -1,12 +1,16 @@
 package net.gasull.well.conf;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,10 +37,10 @@ public class WellConfig {
 	private FileConfiguration conf;
 
 	/** The file to which the conf refer to. */
-	private final File file;
+	private File file;
 
 	/** The Constant CHARSET. */
-	private static final Charset CHARSET = Charset.forName("UTF-8");
+	public static final Charset CHARSET = Charset.defaultCharset();
 
 	/**
 	 * Instantiates a new well config.
@@ -271,6 +275,16 @@ public class WellConfig {
 	}
 
 	/**
+	 * Sets the file.
+	 * 
+	 * @param file
+	 *            the new file
+	 */
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	/**
 	 * Check if the conf is valid according to the plugin's reference resource.
 	 * 
 	 * @param filePath
@@ -317,14 +331,24 @@ public class WellConfig {
 			}
 		} else {
 			// Check if resource exists
-			try (InputStream reader = plugin.getResource(filePath)) {
-				if (reader == null) {
+			try (InputStream stream = plugin.getResource(filePath)) {
+				if (stream == null) {
 					throw new RuntimeException(String.format("No config resource found at %s", filePath));
+				}
+
+				try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), CHARSET))) {
+					BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+
+					String line = reader.readLine();
+					while (line != null) {
+						writer.write(line);
+						writer.write('\n');
+						line = reader.readLine();
+					}
 				}
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-			plugin.saveResource(filePath, false);
 			loadConf();
 		}
 	}
@@ -335,7 +359,7 @@ public class WellConfig {
 	private void loadConf() {
 		this.conf = new YamlConfiguration();
 		try {
-			conf.load(new InputStreamReader(new FileInputStream(file), CHARSET));
+			conf.load(file);
 		} catch (FileNotFoundException e) {
 			// Do nothing, we'll create a new conf
 		} catch (IOException | InvalidConfigurationException e) {
