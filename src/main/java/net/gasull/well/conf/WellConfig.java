@@ -336,6 +336,9 @@ public class WellConfig {
 					throw new RuntimeException(String.format("No config resource found at %s", filePath));
 				}
 
+				// Create directory if doesn't exist
+				file.getAbsoluteFile().getParentFile().mkdirs();
+
 				try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), CHARSET))) {
 					BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
 
