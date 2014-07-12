@@ -19,6 +19,9 @@ public abstract class WellDatabase extends MyDatabase {
 	/** The plugin. */
 	private JavaPlugin plugin;
 
+	/** The is init. */
+	private boolean isInit = false;
+
 	/**
 	 * Instantiates a new well database.
 	 */
@@ -26,6 +29,12 @@ public abstract class WellDatabase extends MyDatabase {
 		super(plugin);
 	}
 
+	/**
+	 * Initialize database.
+	 * 
+	 * @param rebuild
+	 *            the rebuild
+	 */
 	public void initializeDatabase(boolean rebuild) {
 		try {
 			YamlConfiguration conf = new YamlConfiguration();
@@ -33,6 +42,7 @@ public abstract class WellDatabase extends MyDatabase {
 
 			super.initializeDatabase(conf.getString("database.driver"), conf.getString("database.url"), conf.getString("database.username"),
 					conf.getString("database.password"), conf.getString("database.isolation"), conf.getBoolean("database.logging", false), rebuild);
+			isInit = true;
 		} catch (FileNotFoundException e) {
 			plugin.getLogger().log(Level.SEVERE, "Bukkit's configuration not found");
 			throw new RuntimeException(e);
@@ -42,6 +52,18 @@ public abstract class WellDatabase extends MyDatabase {
 		} catch (InvalidConfigurationException e) {
 			plugin.getLogger().log(Level.SEVERE, "Bukkit's configuration is invalid");
 			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Initialize if not already.
+	 * 
+	 * @param rebuild
+	 *            the rebuild
+	 */
+	public void initializeIfNotInit(boolean rebuild) {
+		if (!isInit) {
+			initializeDatabase(rebuild);
 		}
 	}
 

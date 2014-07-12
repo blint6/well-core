@@ -5,7 +5,8 @@ import java.util.logging.Logger;
 import net.gasull.well.conf.WellConfig;
 import net.gasull.well.conf.WellLanguageConfig;
 import net.gasull.well.conf.WellPermissionManager;
-import net.gasull.well.db.WellCommonDao;
+import net.gasull.well.version.WellVersionable;
+import net.gasull.well.version.WellVersioning;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,11 +24,11 @@ public class WellCore extends JavaPlugin {
 	/** The core localization. */
 	private static WellLanguageConfig lang;
 
-	/** The db. */
-	private WellCommonDao db;
-
 	/** The permission manager. */
 	private static WellPermissionManager permission;
+
+	/** The versions manager. */
+	private static WellVersioning versioning;
 
 	@Override
 	public void onLoad() {
@@ -35,6 +36,7 @@ public class WellCore extends JavaPlugin {
 		config = new WellConfig(this, "well-core.yml", true);
 		lang = new WellLanguageConfig(this, config.getString("language"));
 		permission = new WellPermissionManager(instance, lang);
+		versioning = new WellVersioning(this);
 	}
 
 	/**
@@ -74,24 +76,21 @@ public class WellCore extends JavaPlugin {
 	}
 
 	/**
-	 * The common DAO fro well plugins. Dynamically inits, because this can't
-	 * happen in {@link #onLoad()} but must happen before any other DAO inits.
-	 * 
-	 * @return the common DAO
-	 */
-	public static WellCommonDao db() {
-		if (instance().db == null) {
-			instance().db = new WellCommonDao(instance());
-		}
-		return instance().db;
-	}
-
-	/**
 	 * Gets the single instance of WellCore.
 	 * 
 	 * @return single instance of WellCore
 	 */
 	public static WellCore instance() {
 		return instance;
+	}
+
+	/**
+	 * Checks the version of a versionable.
+	 * 
+	 * @param versionable
+	 *            the versionable
+	 */
+	public static void checkVersion(WellVersionable versionable) {
+		versioning.checkVersion(versionable);
 	}
 }

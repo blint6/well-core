@@ -275,6 +275,15 @@ public class WellConfig {
 	}
 
 	/**
+	 * Gets the file.
+	 * 
+	 * @return the file
+	 */
+	public File getFile() {
+		return file;
+	}
+
+	/**
 	 * Sets the file.
 	 * 
 	 * @param file
