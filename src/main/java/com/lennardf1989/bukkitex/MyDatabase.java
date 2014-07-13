@@ -111,8 +111,7 @@ public abstract class MyDatabase {
 
         //Do a sanity check first
         if(classes.size() == 0) {
-            //Exception: There is no use in continuing to load this database
-            throw new RuntimeException("Database has been enabled, but no classes are registered to it");
+            javaPlugin.getLogger().log(Level.WARNING, "Database has been enabled, but no classes are registered to it");
         }
 
         //Register them with the EbeanServer
@@ -406,4 +405,13 @@ public abstract class MyDatabase {
     public EbeanServer getDatabase() {
         return ebeanServer;
     }
+
+	/**
+	 * Checks if is using SQLite.
+	 *
+	 * @return true, if is using sq lite
+	 */
+	public boolean isUsingSQLite() {
+		return usingSQLite;
+	}
 }
