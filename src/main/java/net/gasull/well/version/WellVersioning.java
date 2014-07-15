@@ -96,9 +96,11 @@ public class WellVersioning {
 
 				if (lastVersion == null) {
 					pluginVersions.getConfig().set(pluginName, pluginVersion);
+					pluginVersions.save();
 					return;
 				} else {
 					pluginVersions.getConfig().set(pluginName, lastVersion);
+					pluginVersions.save();
 					WellCore.logger().log(Level.INFO, String.format("Successfully upgraded %s to version %s", pluginName, lastVersion));
 				}
 			}
