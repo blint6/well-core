@@ -12,6 +12,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Instantiates a simple DB connection (for specific requests)
@@ -30,14 +31,24 @@ public class WellDatabaseSimple implements Closeable {
 	/**
 	 * Instantiates a new well database sql.
 	 * 
+	 * @param plugin
+	 *            the plugin
 	 * @param conf
 	 *            the conf to allow your user to specify a specific database at.
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
-	public WellDatabaseSimple(FileConfiguration conf) throws SQLException {
+	public WellDatabaseSimple(JavaPlugin plugin, FileConfiguration conf) throws SQLException {
 		this.dbConf = getDbConf(conf);
-		String fullUrl = String.format("%s?user=%s&password=%s", dbConf.getString("url"), dbConf.getString("username"), dbConf.getString("password"));
+		String url = replaceDatabaseURL(plugin, dbConf.getString("url"));
+		String fullUrl;
+
+		if (url.startsWith("jdbc:sqlite")) {
+			DriverManager.registerDriver(new org.sqlite.JDBC());
+			fullUrl = url;
+		} else {
+			fullUrl = String.format("%s?user=%s&password=%s", url, dbConf.getString("username"), dbConf.getString("password"));
+		}
 
 		this.connection = DriverManager.getConnection(fullUrl);
 	}
@@ -58,6 +69,22 @@ public class WellDatabaseSimple implements Closeable {
 		} catch (SQLException e) {
 			throw new IOException(e);
 		}
+	}
+
+	/**
+	 * Replace database url.
+	 * 
+	 * @param plugin
+	 *            the plugin
+	 * @param input
+	 *            the input
+	 * @return the string
+	 */
+	public static String replaceDatabaseURL(JavaPlugin plugin, String input) {
+		input = input.replaceAll("\\{DIR\\}", plugin.getDataFolder().getPath().replaceAll("\\\\", "/") + "/");
+		input = input.replaceAll("\\{NAME\\}", plugin.getDescription().getName().replaceAll("[^\\w_-]", ""));
+
+		return input;
 	}
 
 	/**
